@@ -1,0 +1,12 @@
+#!/usr/bin/php
+<?php
+
+define("__INCLUDE_PATH__", dirname(__FILE__) . "/php_include");
+
+require_once __INCLUDE_PATH__ . "/bularcama.php";
+
+$bularcama = new Bularcama();
+if(!$bularcama->build_site())
+	print "Error: " . $bularcama->error ."\n";
+
+?>

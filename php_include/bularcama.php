@@ -165,7 +165,7 @@ class Bularcama {
 				return false;
 			}
 
-			foreach( $file_parsed["template"] as $name => $template){
+			/*foreach( $file_parsed["template"] as $name => $template){
 				$path_parts = pathinfo($file);
 				$template_path = $out."/".$path_parts['filename']."_".$name.".template";
 
@@ -193,7 +193,24 @@ class Bularcama {
 					$this->error = "Error escrbiendo el archivo: \"" .$json_path."\"";
 					return false;
 				}
+			}*/
+
+			$path_parts = pathinfo($file);
+			$file_path = $out."/".$path_parts['filename'].".template";
+			if(!file_put_contents( $file_path, json_encode($file_parsed["template"]))){
+				$this->error = "Error escrbiendo el archivo: \"" .$file_path."\"";
+				return false;
 			}
+
+			if(array_key_exists("vars", $file_parsed["context"]) && $file_parsed["context"]["vars"])
+				$file_parsed["context"]["vars"] = $file_parsed["vars"];
+
+			$file_path = $out."/".$path_parts['filename'].".json";
+			if(!file_put_contents( $file_path, json_encode($file_parsed["context"]))){
+				$this->error = "Error escrbiendo el archivo: \"" .$file_path."\"";
+				return false;
+			}
+
 		}
 
 		return true;

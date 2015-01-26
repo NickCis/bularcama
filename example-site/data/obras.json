@@ -1,0 +1,12 @@
+{
+	"obras": [
+		"obra0",
+		"obra1",
+		"obra2",
+		"obra3"
+	],
+	"data": {
+		"obra": "obra0",
+		"bbcode": "esto es un bbcode [url=google]pepe[/url][i]italica[/i][youtube]asdasd[/youtube]"
+	}
+}

@@ -1,0 +1,19 @@
+<!-- BEGIN metadata -->
+layout: base.html
+context:
+  main: data/obras.json
+vars:
+  title: Obras
+<!-- END metadata -->
+
+<!-- BEGIN main -->
+Pagina obras!
+{{#each obras}}
+{{#ifTest 'this == "obra0"' data=../data}}Soy obra0!{{/ifTest}}
+<h6>{{this}}</h6>
+{{/each}}
+
+ -- - - ---<br/>
+{{bbcode data.bbcode}}
+ -- - - ---<br/>
+<!-- END main -->

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>{{#if title}}{{title}}{{else}}Mi lindo titulo{{/if}}</title>
+		<meta name="description" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<link rel="shortcut icon" sizes="16x16 32x32 48x48 64x64" href="/favicon.ico">
+		<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+		<link rel="stylesheet" href="css/main.css">
+	</head>
+	<body>
+		<div id="leftbar">
+			<a class="handle-left"></a>
+			<a id="left-logo">
+				Logo
+				<!--img src='img/logo_i.png'/-->
+			</a>
+			<ul id="navigation">
+				<li><a data-click="link" href="index.html">home</a></li>
+				<li><a data-click="link" href="obras.html">obra</a></li>
+				<li><a data-click="link" href="acerca_de_mi.html">acerca de mi</a></li>
+			</ul>
+		</div>
+		<div id="content">
+			<div id="main">{{{main}}}</div>
+		</div>
+		<script type="text/javascript">
+		// dependecias basicar
+		// Agrego una libreria de ajax
+		{{include __static_dir__ . "/js/ajax.js"}}
+		// Agrego handlebars
+		{{include __static_dir__ . "/js/handlebars-v1.3.0.js"}}
+		// Agrego a bularcama
+		{{include __static_dir__ . "/js/bularcama.js"}}
+
+		window.addEventListener('load', function(){
+			window.bularcama = new Bularcama({
+				processTemplate: function(template, ctx){
+					// processTemplate se ejecuta para procesar el templates
+					// Aca hay que acomodar lo que se carga dinamicamente en su lugar
+
+					// Cambio el titulo
+					document.title = ctx.title || "Cambio de titulo";
+
+					// Cambio el contenido de main
+					if(template["main"])
+						document.getElementById("main").innerHTML = Handlebars.compile(template["main"])(ctx["main"]);
+
+					// Si tiene un script, lo agrego para ejecutarlo
+					if(template["script"]){
+						var script = document.createElement("script");
+						script.setAttribute("type", "text/javascript");
+						script.text = template["script"];
+						document.body.appendChild(script);
+					}
+
+					console.log("Aca agrego codigo para que se ejecute cada vez qe se carga una pagina");
+				}
+			});
+
+			console.log("Agrego codigo para que se ejecute solo la primera vez al cargar la pagina");
+
+			console.log("Pongo esto abajo, para que cada pagina defina si quiere ejecutar js al ser cargada");
+			{{#if script}} {{{script}}} {{/if}}
+		})
+		</script>
+	</body>
+</html>
+

@@ -134,7 +134,11 @@ class Bularcama {
 	}
 
 	function build_site(){
-		return $this->build_site_dir($this->site_dir, $this->out_dir);
+		if(!$this->copy_dir($this->static_dir, $this->out_dir))
+			return false;
+		if(!$this->build_site_dir($this->site_dir, $this->out_dir))
+			return false;
+		return true;
 	}
 
 	protected function build_site_dir($dir, $out){
@@ -211,6 +215,35 @@ class Bularcama {
 				return false;
 			}
 
+		}
+
+		return true;
+	}
+
+	protected function copy_dir($dir, $dest){
+		if(! is_dir($dest)){
+			if(!mkdir($dest)){
+				$this->error = "Problema al crear el directorio: \"" . $dest . "\"";
+				return false;
+			}
+		}
+
+		$dir_fd = opendir($dir);
+		while(false !== ($file = readdir($dir_fd))){
+			if($this->ignore_site_file($file))
+				continue;
+
+			if(is_dir($dir."/".$file)){
+				if(! $this->copy_dir($dir."/".$file, $dest."/".$file)){
+					return false;
+				}
+				continue;
+			}
+
+			if(!copy($dir."/".$file, $dest."/".$file)){
+				$this->error = "Problema al copiar archivo: \"" . $dir."/".$file . "\"";
+				return false;
+			}
 		}
 
 		return true;

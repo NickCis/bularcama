@@ -8,6 +8,7 @@
 		this.cfg = cfg || {}
 	}
 
+	Bularcama.prototype.ajaxRetries = 3;
 	Bularcama.prototype.registerClick = function(){
 		document.body.addEventListener('click', this._onClick(), false);
 		window.addEventListener('popstate', this._onPopState(), false);
@@ -92,22 +93,26 @@
 			success: (function(data){
 				dataAccumulator["data_"+id] = JSON.parse(data);
 				this.loadPageCb(template, id);
+			}).bind(this),
+			failure: (function(){
+				this.loadPageFailureCb(template, id, page);
 			}).bind(this)
-			// TODO: failure
 		});
 	};
 
-	Bularcama.prototype.loadTemplate = function(page, id){
-		if(this.templates[page])
-			return this.loadPageCb(page, id);
+	Bularcama.prototype.loadTemplate = function(template, id){
+		if(this.templates[template])
+			return this.loadPageCb(template, id);
 
 		new Ajax({
-			url: page,
+			url: template,
 			success: (function(data){
-				this.templates[page] = JSON.parse(data);
-				this.loadPageCb(page, id);
+				this.templates[template] = JSON.parse(data);
+				this.loadPageCb(template, id);
+			}).bind(this),
+			failure: (function(){
+				this.loadPageFailureCb(template, id);
 			}).bind(this)
-			// TODO: failure
 		});
 	};
 
@@ -117,8 +122,45 @@
 				this.cfg.processTemplate(this.templates[template], dataAccumulator["data_"+id]);
 			delete dataAccumulator["data_"+id];
 
-		if(typeof(this.cfg.loaderEnd) == "function")
-			this.cfg.loaderEnd(this, id, dataAccumulator)
+			if(typeof(this.cfg.loaderEnd) == "function")
+				this.cfg.loaderEnd(this, id, dataAccumulator)
+		}
+	};
+
+	Bularcama.prototype.loadPageFailureCb = function(template, id, page){
+		if(page){
+			if(typeof(dataAccumulator["error_page_"+id]) == "undefined")
+				dataAccumulator["error_page_"+id] = this.ajaxRetries;
+
+			if(--dataAccumulator["error_page_"+id])
+				this.loadData(page, template, id);
+
+		}else{
+			if(typeof(dataAccumulator["error_template_"+id]) == "undefined")
+				dataAccumulator["error_template_"+id] = this.ajaxRetries;
+
+			if(--dataAccumulator["error_template_"+id])
+				this.loadTemplate(template, id);
+		}
+
+		if( (
+				typeof(dataAccumulator["error_template_"+id]) != "undefined" && !dataAccumulator["error_template_"+id] &&
+				typeof(dataAccumulator["error_page_"+id]) != "undefined" && !dataAccumulator["error_page_"+id]
+			) || (
+				typeof(dataAccumulator["error_template_"+id]) != "undefined" && !dataAccumulator["error_template_"+id] &&
+				typeof(dataAccumulator["data_"+id]) != "undefined"
+			) || (
+				typeof(dataAccumulator["error_page_"+id]) != "undefined" && !dataAccumulator["error_page_"+id] &&
+				this.templates[template]
+			)
+		){
+			this.cfg.processTemplate();
+			if(typeof(this.cfg.loaderEnd) == "function")
+				this.cfg.loaderEnd(this, id, dataAccumulator);
+
+			delete dataAccumulator["error_template_"+id];
+			delete dataAccumulator["error_page_"+id];
+			delete dataAccumulator["data_"+id];
 		}
 	};
 

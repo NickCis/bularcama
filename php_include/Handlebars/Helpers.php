@@ -89,6 +89,7 @@ class Helpers
         //XXX: custom helpers
         $this->add('ifTest', new Helper\IfTestHelper());
         $this->add('bbcode', new Helper\BbcodeHelper());
+        $this->add('json', new Helper\JsonHelper());
         //TODO:
         //$this->add('scaleSrc', new Helper\IfTestHelper());
         $this->add('include', new Helper\IncludeHelper());

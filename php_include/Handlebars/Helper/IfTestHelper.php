@@ -41,7 +41,7 @@ class IfTestHelper implements Helper
     public function execute(Template $template, Context $context, $args, $source)
     {
         $matches = array();
-        preg_match_all('/(["\'])(?:\\\\.|[^\\\\\1])*\1|\S+/', $args, $matches, PREG_SET_ORDER);
+        preg_match_all('/(["\'])(?:\\\\.|[^\\\\\1])*?\1|\S+/', $args, $matches, PREG_SET_ORDER);
 
         $replaces = array();
         $first = true;
@@ -66,7 +66,7 @@ class IfTestHelper implements Helper
         }
 
         $matches = array();
-        preg_match_all('/(["\'])(?:\\\\.|[^\\\\\1])*\1|\S+/', $condition, $matches, PREG_SET_ORDER);
+        preg_match_all('/(["\'])(?:\\\\.|[^\\\\\1])*?\1|\S+/', $condition, $matches, PREG_SET_ORDER);
         $condition = "return";
         foreach ($matches as $match){
             if(! $match[0])

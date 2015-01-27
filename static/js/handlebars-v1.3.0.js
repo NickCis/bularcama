@@ -312,6 +312,10 @@ var __module2__ = (function(__dependency1__, __dependency2__) {
       instance.log(level, context);
     });
 
+    instance.registerHelper('json', function(context) {
+      return new Handlebars.SafeString(JSON.stringify(context));
+    });
+
     instance.registerHelper('ifTest', function(conditional, options) {
       var evalStr = '',
       context = [options.data, options.hash];

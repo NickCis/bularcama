@@ -165,7 +165,7 @@ class Bularcama {
 			$file_parsed = $this->parse_file($dir . "/" . $file);
 
 			if(!file_put_contents($out."/".$file, $file_parsed["file"])){
-				$this->error = "Error escrbiendo el archivo: \"" .$out . "/" . $file."\"";
+				$this->error = "Error escrbiendo el archivo[1]: \"" .$out . "/" . $file."\"";
 				return false;
 			}
 
@@ -202,16 +202,16 @@ class Bularcama {
 			$path_parts = pathinfo($file);
 			$file_path = $out."/".$path_parts['filename'].".template";
 			if(!file_put_contents( $file_path, json_encode($file_parsed["template"]))){
-				$this->error = "Error escrbiendo el archivo: \"" .$file_path."\"";
+				$this->error = "Error escrbiendo el archivo[2]: \"" .$file_path."\"";
 				return false;
 			}
 
-			if(array_key_exists("vars", $file_parsed["context"]) && $file_parsed["context"]["vars"])
+			if(array_key_exists("vars", $file_parsed) && $file_parsed["vars"])
 				$file_parsed["context"]["vars"] = $file_parsed["vars"];
 
 			$file_path = $out."/".$path_parts['filename'].".json";
 			if(!file_put_contents( $file_path, json_encode($file_parsed["context"]))){
-				$this->error = "Error escrbiendo el archivo: \"" .$file_path."\"";
+				$this->error = "Error escrbiendo el archivo[3]: \"" .$file_path."\"";
 				return false;
 			}
 

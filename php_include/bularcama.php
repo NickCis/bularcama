@@ -83,38 +83,103 @@ class Bularcama {
 		}
 
 		$metadata = spyc_load($name_matches["metadata"]);
-		$context = array_key_exists("vars", $metadata) ? $metadata["vars"] : array();
-		$output = array(
-			"file" => "",
-			"template" => array(),
-			"context" => array(),
-			"vars" => $context
-		);
-
+		$vars = array_key_exists("vars", $metadata) ? $metadata["vars"] : array();
+		$sections = array();
+		$templates = array();
 		foreach($name_matches as $name => $value){
 			if($name == "metadata")
 				continue;
 
-			$output["template"][$name] = $value;
+			$value = $this->pre_render_template($value);
 
-			$local_context = array();
+			array_push($templates, $value);
+			$section = array(
+				"name" => $name,
+				"data" => array(),
+				"template" => $value
+			);
 
-			if(array_key_exists("context", $metadata) && array_key_exists($name, $metadata["context"]))
-				$local_context = json_decode(file_get_contents($metadata["context"][$name]), true);
+			if(array_key_exists("context", $metadata) && array_key_exists($name, $metadata["context"])){
+				foreach (glob($metadata["context"][$name]) as $file){
+					$local_context = json_decode(file_get_contents($file), true);
+					array_push($section["data"], array(
+						"file" => $file,
+						"context" => $local_context,
+						"render" => $this->engine->render($value, $local_context)
+					));
+				}
+			}else{
+				array_push($section["data"], array(
+					"file" => "",
+					"context" => array(),
+					"render" => $this->engine->render($value, array())
+				));
+			}
 
-			$output["context"][$name] = $local_context;
-
-			$context[$name] = $this->engine->render($value, $local_context);
+			array_push($sections, $section);
 		}
 
-		foreach($this->default_context as $key => $val){
-			if(!array_key_exists($key, $context))
-				$context[$key] = $val;
+		return $this->render_file($metadata, $sections, $vars, $path);
+	}
+
+	function pre_render_template($template){
+		$template = preg_replace_callback("/{{\s?include.*?}}/", function($matches){
+			return $this->engine->render($matches[0], $this->default_context);
+		}, $template);
+		return $template;
+	}
+
+	function render_file($metadata, $sections, $vars, $path){
+		$outputs = array();
+		$context = array_merge($vars, $this->default_context);
+		$path_parts = pathinfo($path);
+
+		$sections_length = count($sections);
+		$indexes = array_pad(array(), $sections_length, 0);
+		$layout = $this->get_layout($metadata["layout"]);
+
+		# TODO: nombre de archivo
+		for(;;){
+			$ctx = $context;
+
+			$output = array(
+				"file" => "",
+				"template" => "",
+				"context" => array(),
+				"vars" => $vars,
+				"filename" => array_key_exists("filename", $metadata) ? $metadata["filename"] : $path_parts["filename"],
+				"extension" => $path_parts["extension"],
+			);
+
+			for ($idx = 0; $idx < $sections_length; $idx++){
+				if($indexes[$idx] < count($sections[$idx]["data"])){
+					$ctx[$sections[$idx]["name"]] = $sections[$idx]["data"][$indexes[$idx]]["render"];
+					$output["context"][$sections[$idx]["name"]]  = $sections[$idx]["data"][$indexes[$idx]]["context"];
+					if(array_key_exists("filename", $metadata)){
+						$path_info = pathinfo($sections[$idx]["data"][$indexes[$idx]]["file"]);
+						$output["filename"] = str_replace("{{".$sections[$idx]["name"]."}}", $path_info["filename"], $output["filename"]);
+					}
+				}
+				$output["template"][$sections[$idx]["name"]] = $sections[$idx]["template"];
+			}
+
+			$output["file"] = $this->engine->render($layout, $ctx);
+			array_push($outputs, $output);
+
+			for($idx = 0; $idx < $sections_length; $idx++){
+				$indexes[$idx]++;
+				if($indexes[$idx] >= count($sections[$idx]["data"])){
+					$indexes[$idx] = 0;
+					if($idx == $sections_length -1)
+						return $outputs;
+				}else{
+					break;
+				}
+			}
 		}
 
-		$output["file"] = $this->engine->render($this->get_layout($metadata["layout"]), $context);
+		return $outputs;
 
-		return $output;
 	}
 
 	function ignore_site_file($file, $extra=array()){
@@ -162,57 +227,57 @@ class Bularcama {
 				continue;
 			}
 
-			$file_parsed = $this->parse_file($dir . "/" . $file);
-
-			if(!file_put_contents($out."/".$file, $file_parsed["file"])){
-				$this->error = "Error escrbiendo el archivo[1]: \"" .$out . "/" . $file."\"";
-				return false;
-			}
-
-			/*foreach( $file_parsed["template"] as $name => $template){
-				$path_parts = pathinfo($file);
-				$template_path = $out."/".$path_parts['filename']."_".$name.".template";
-
-				if(!file_put_contents( $template_path, $template)){
-					$this->error = "Error escrbiendo el archivo: \"" .$template_path."\"";
+			$files_parsed = $this->parse_file($dir . "/" . $file);
+			foreach ($files_parsed as $file_parsed){
+				if(!file_put_contents($out."/".$file_parsed["filename"].".".$file_parsed["extension"], $file_parsed["file"])){
+					$this->error = "Error escrbiendo el archivo[1]: \"" .$out . "/" . $file."\"";
 					return false;
 				}
-			}
 
-			foreach( $file_parsed["context"] as $name => $data){
-				$path_parts = pathinfo($file);
-				$json_path = $out."/".$path_parts['filename']."_".$name.".json";
+				/*foreach( $file_parsed["template"] as $name => $template){
+					$path_parts = pathinfo($file);
+					$template_path = $out."/".$path_parts['filename']."_".$name.".template";
 
-				if(!file_put_contents( $json_path, json_encode($data))){
-					$this->error = "Error escrbiendo el archivo: \"" .$json_path."\"";
+					if(!file_put_contents( $template_path, $template)){
+						$this->error = "Error escrbiendo el archivo: \"" .$template_path."\"";
+						return false;
+					}
+				}
+
+				foreach( $file_parsed["context"] as $name => $data){
+					$path_parts = pathinfo($file);
+					$json_path = $out."/".$path_parts['filename']."_".$name.".json";
+
+					if(!file_put_contents( $json_path, json_encode($data))){
+						$this->error = "Error escrbiendo el archivo: \"" .$json_path."\"";
+						return false;
+					}
+				}
+
+				if($file_parsed["vars"]){
+					$path_parts = pathinfo($file);
+					$json_path = $out."/".$path_parts['filename'].".ctx.json";
+
+					if(!file_put_contents( $json_path, json_encode($file_parsed["vars"]))){
+						$this->error = "Error escrbiendo el archivo: \"" .$json_path."\"";
+						return false;
+					}
+				}*/
+
+				$file_path = $out."/".$file_parsed['filename'].".template";
+				if(!file_put_contents( $file_path, json_encode($file_parsed["template"]))){
+					$this->error = "Error escrbiendo el archivo[2]: \"" .$file_path."\"";
 					return false;
 				}
-			}
 
-			if($file_parsed["vars"]){
-				$path_parts = pathinfo($file);
-				$json_path = $out."/".$path_parts['filename'].".ctx.json";
+				if(array_key_exists("vars", $file_parsed) && $file_parsed["vars"])
+					$file_parsed["context"]["vars"] = $file_parsed["vars"];
 
-				if(!file_put_contents( $json_path, json_encode($file_parsed["vars"]))){
-					$this->error = "Error escrbiendo el archivo: \"" .$json_path."\"";
+				$file_path = $out."/".$file_parsed['filename'].".json";
+				if(!file_put_contents( $file_path, json_encode($file_parsed["context"]))){
+					$this->error = "Error escrbiendo el archivo[3]: \"" .$file_path."\"";
 					return false;
 				}
-			}*/
-
-			$path_parts = pathinfo($file);
-			$file_path = $out."/".$path_parts['filename'].".template";
-			if(!file_put_contents( $file_path, json_encode($file_parsed["template"]))){
-				$this->error = "Error escrbiendo el archivo[2]: \"" .$file_path."\"";
-				return false;
-			}
-
-			if(array_key_exists("vars", $file_parsed) && $file_parsed["vars"])
-				$file_parsed["context"]["vars"] = $file_parsed["vars"];
-
-			$file_path = $out."/".$path_parts['filename'].".json";
-			if(!file_put_contents( $file_path, json_encode($file_parsed["context"]))){
-				$this->error = "Error escrbiendo el archivo[3]: \"" .$file_path."\"";
-				return false;
 			}
 
 		}

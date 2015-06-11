@@ -206,7 +206,7 @@ class Bularcama {
 		return true;
 	}
 
-	protected function build_site_dir($dir, $out){
+	function build_site_dir($dir, $out){
 		if(! is_dir($out)){
 			if(!mkdir($out)){
 				$this->error = "Problema al crear el directorio: \"" . $out . "\"";
@@ -227,62 +227,66 @@ class Bularcama {
 				continue;
 			}
 
-			$files_parsed = $this->parse_file($dir . "/" . $file);
-			foreach ($files_parsed as $file_parsed){
-				if(!file_put_contents($out."/".$file_parsed["filename"].".".$file_parsed["extension"], $file_parsed["file"])){
-					$this->error = "Error escrbiendo el archivo[1]: \"" .$out . "/" . $file."\"";
-					return false;
-				}
-
-				/*foreach( $file_parsed["template"] as $name => $template){
-					$path_parts = pathinfo($file);
-					$template_path = $out."/".$path_parts['filename']."_".$name.".template";
-
-					if(!file_put_contents( $template_path, $template)){
-						$this->error = "Error escrbiendo el archivo: \"" .$template_path."\"";
-						return false;
-					}
-				}
-
-				foreach( $file_parsed["context"] as $name => $data){
-					$path_parts = pathinfo($file);
-					$json_path = $out."/".$path_parts['filename']."_".$name.".json";
-
-					if(!file_put_contents( $json_path, json_encode($data))){
-						$this->error = "Error escrbiendo el archivo: \"" .$json_path."\"";
-						return false;
-					}
-				}
-
-				if($file_parsed["vars"]){
-					$path_parts = pathinfo($file);
-					$json_path = $out."/".$path_parts['filename'].".ctx.json";
-
-					if(!file_put_contents( $json_path, json_encode($file_parsed["vars"]))){
-						$this->error = "Error escrbiendo el archivo: \"" .$json_path."\"";
-						return false;
-					}
-				}*/
-
-				$file_path = $out."/".$file_parsed['filename'].".template";
-				if(!file_put_contents( $file_path, json_encode($file_parsed["template"]))){
-					$this->error = "Error escrbiendo el archivo[2]: \"" .$file_path."\"";
-					return false;
-				}
-
-				if(array_key_exists("vars", $file_parsed) && $file_parsed["vars"])
-					$file_parsed["context"]["vars"] = $file_parsed["vars"];
-
-				$file_path = $out."/".$file_parsed['filename'].".json";
-				if(!file_put_contents( $file_path, json_encode($file_parsed["context"]))){
-					$this->error = "Error escrbiendo el archivo[3]: \"" .$file_path."\"";
-					return false;
-				}
-			}
+			$this->build_file($dir, $file, $out);
 
 		}
 
 		return true;
+	}
+
+	function build_file($dir, $file, $out){
+		$files_parsed = $this->parse_file($dir . "/" . $file);
+		foreach ($files_parsed as $file_parsed){
+			if(!file_put_contents($out."/".$file_parsed["filename"].".".$file_parsed["extension"], $file_parsed["file"])){
+				$this->error = "Error escrbiendo el archivo[1]: \"" .$out . "/" . $file."\"";
+				return false;
+			}
+
+			/*foreach( $file_parsed["template"] as $name => $template){
+				$path_parts = pathinfo($file);
+				$template_path = $out."/".$path_parts['filename']."_".$name.".template";
+
+				if(!file_put_contents( $template_path, $template)){
+					$this->error = "Error escrbiendo el archivo: \"" .$template_path."\"";
+					return false;
+				}
+			}
+
+			foreach( $file_parsed["context"] as $name => $data){
+				$path_parts = pathinfo($file);
+				$json_path = $out."/".$path_parts['filename']."_".$name.".json";
+
+				if(!file_put_contents( $json_path, json_encode($data))){
+					$this->error = "Error escrbiendo el archivo: \"" .$json_path."\"";
+					return false;
+				}
+			}
+
+			if($file_parsed["vars"]){
+				$path_parts = pathinfo($file);
+				$json_path = $out."/".$path_parts['filename'].".ctx.json";
+
+				if(!file_put_contents( $json_path, json_encode($file_parsed["vars"]))){
+					$this->error = "Error escrbiendo el archivo: \"" .$json_path."\"";
+					return false;
+				}
+			}*/
+
+			$file_path = $out."/".$file_parsed['filename'].".template";
+			if(!file_put_contents( $file_path, json_encode($file_parsed["template"]))){
+				$this->error = "Error escrbiendo el archivo[2]: \"" .$file_path."\"";
+				return false;
+			}
+
+			if(array_key_exists("vars", $file_parsed) && $file_parsed["vars"])
+				$file_parsed["context"]["vars"] = $file_parsed["vars"];
+
+			$file_path = $out."/".$file_parsed['filename'].".json";
+			if(!file_put_contents( $file_path, json_encode($file_parsed["context"]))){
+				$this->error = "Error escrbiendo el archivo[3]: \"" .$file_path."\"";
+				return false;
+			}
+		}
 	}
 
 	protected function copy_dir($dir, $dest){

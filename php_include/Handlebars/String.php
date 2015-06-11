@@ -15,7 +15,8 @@
  * @link      http://xamin.ir
  */
 
-namespace Handlebars;
+//namespace Handlebars;
+require_once(dirname(__FILE__)."/BaseString.php");
 
 /**
  * Handlebars string
@@ -29,6 +30,6 @@ namespace Handlebars;
  * @link      http://xamin.ir
  */
 
-class String extends BaseString
+class Handlebars_String extends Handlebars_BaseString
 {
 }

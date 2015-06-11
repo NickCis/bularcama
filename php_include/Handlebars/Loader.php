@@ -17,7 +17,7 @@
  * @link      http://xamin.ir
  */
 
-namespace Handlebars;
+//namespace Handlebars;
 
 /**
  * Handlebars loader interface
@@ -32,7 +32,7 @@ namespace Handlebars;
  * @link      http://xamin.ir
  */
 
-interface Loader
+interface Handlebars_Loader
 {
 
     /**

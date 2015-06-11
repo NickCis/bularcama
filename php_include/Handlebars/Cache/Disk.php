@@ -16,8 +16,9 @@
  * @link      http://xamin.ir
  */
 
-namespace Handlebars\Cache;
-use Handlebars\Cache;
+//namespace Handlebars\Cache;
+//use Handlebars\Cache;
+require_once(dirname(__FILE__)."/../Cache.php");
 
 /**
  * A flat-file filesystem cache.
@@ -31,7 +32,7 @@ use Handlebars\Cache;
  * @link      http://xamin.ir
  */
 
-class Disk implements Cache
+class Handlebars_Cache_Disk implements Handlebars_Cache
 {
 
     private $_path = '';
@@ -51,12 +52,12 @@ class Disk implements Cache
     public function __construct($path, $prefix = '', $suffix = '')
     {
         if (empty($path)) {
-            throw new \InvalidArgumentException('Must specify disk cache path');
+            throw new InvalidArgumentException('Must specify disk cache path');
         } elseif (!is_dir($path)) {
             @mkdir($path, 0777, true);
 
             if (!is_dir($path)) {
-                throw new \RuntimeException('Could not create cache file path');
+                throw new RuntimeException('Could not create cache file path');
             }
         }
 

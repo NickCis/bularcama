@@ -11,11 +11,14 @@
  * @version   GIT: $Id$
  */
 
-namespace Handlebars\Helper;
+//namespace Handlebars\Helper;
 
-use Handlebars\Context;
-use Handlebars\Helper;
-use Handlebars\Template;
+//use Handlebars\Context;
+//use Handlebars\Helper;
+//use Handlebars\Template;
+require_once(dirname(__FILE__)."/../Context.php");
+require_once(dirname(__FILE__)."/../Helper.php");
+require_once(dirname(__FILE__)."/../Template.php");
 
 /**
  * Handlebars halper interface
@@ -26,7 +29,7 @@ use Handlebars\Template;
  * @license   MIT <http://opensource.org/licenses/MIT>
  * @version   Release: @package_version@
  */
-class IfTestHelper implements Helper
+class Handlebars_Helper_IfTestHelper implements Handlebars_Helper
 {
     /**
      * Execute the helper
@@ -38,7 +41,7 @@ class IfTestHelper implements Helper
      *
      * @return mixed
      */
-    public function execute(Template $template, Context $context, $args, $source)
+    public function execute(Handlebars_Template $template, Handlebars_Context $context, $args, $source)
     {
         $matches = array();
         preg_match_all('/(["\'])(?:\\\\.|[^\\\\\1])*?\1|\S+/', $args, $matches, PREG_SET_ORDER);
@@ -79,7 +82,7 @@ class IfTestHelper implements Helper
 
             try {
                 $value = "\"".$context->get($value, true) ."\"";
-            } catch(\Exception $e) {
+            } catch(Exception $e) {
             }
 
             $condition .= " " . $value;

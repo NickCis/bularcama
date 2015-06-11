@@ -13,7 +13,9 @@
  * @link      http://xamin.ir
  */
 
-namespace Handlebars;
+//namespace Handlebars;
+require_once(dirname(__FILE__)."/Template.php");
+require_once(dirname(__FILE__)."/Context.php");
 
 /**
  * Handlebars helper interface
@@ -26,7 +28,7 @@ namespace Handlebars;
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
-interface Helper
+interface Handlebars_Helper
 {
     /**
      * Execute the helper
@@ -38,5 +40,5 @@ interface Helper
      *
      * @return mixed
      */
-    public function execute(Template $template, Context $context, $args, $source);
+    public function execute(Handlebars_Template $template, Handlebars_Context $context, $args, $source);
 }

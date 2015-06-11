@@ -13,8 +13,9 @@
  * @link      http://xamin.ir
  */
 
-namespace Handlebars;
+//namespace Handlebars;
 
+require_once(dirname(__FILE__)."/Loader/StringLoader.php");
 /**
  * Encapsulates helpers arguments.
  *
@@ -26,7 +27,7 @@ namespace Handlebars;
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
-class Arguments
+class Handlebars_Arguments
 {
     /**
      * List of named arguments.
@@ -134,7 +135,7 @@ class Arguments
             } elseif (preg_match($positional_argument, $current_str, $matches)) {
                 // A positional argument found. It cannot follow named arguments
                 if (count($this->namedArgs) !== 0) {
-                    throw new \InvalidArgumentException('Positional arguments cannot follow named arguments');
+                    throw new InvalidArgumentException('Positional arguments cannot follow named arguments');
                 }
 
                 $this->positionalArgs[] = $this->prepareArgumentValue($matches[1]);
@@ -142,7 +143,7 @@ class Arguments
                 // Remove found argument from arguments string.
                 $current_str = ltrim(substr($current_str, strlen($matches[0])));
             } else {
-                throw new \InvalidArgumentException('Malformed arguments string');
+                throw new InvalidArgumentException('Malformed arguments string');
             }
         }
     }
@@ -162,14 +163,14 @@ class Arguments
         // Check if argument's value is a quoted string literal
         if ($value[0] == "'" || $value[0] == '"') {
             // Remove enclosing quotes and unescape
-            return new String(stripcslashes(substr($value, 1, -1)));
+            return new Handlebars_String(stripcslashes(substr($value, 1, -1)));
         }
 
         // Check if the value is an integer literal
         if (preg_match("/^-?\d+$/", $value)) {
             // Wrap the value into the String class to tell the Context that
             // it's a value and not a variable name.
-            return new String($value);
+            return new Handlebars_String($value);
         }
 
         return $value;

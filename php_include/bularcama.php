@@ -1,10 +1,11 @@
 <?php
 require_once __INCLUDE_PATH__ . "/spyc.php";
 require_once __INCLUDE_PATH__ . "/Handlebars/Autoloader.php";
+require_once __INCLUDE_PATH__ . "/Handlebars/Handlebars.php";
 
-Handlebars\Autoloader::register();
+Handlebars_Autoloader::register();
 
-use Handlebars\Handlebars;
+//use Handlebars\Handlebars;
 
 class Bularcama {
 	protected $base_dir = ".";
@@ -48,7 +49,7 @@ class Bularcama {
 			}
 		}
 
-		$this->engine = new Handlebars;
+		$this->engine = new Handlebars_Handlebars;
 	}
 
 	private function file_get_contents($path){
@@ -100,13 +101,18 @@ class Bularcama {
 			);
 
 			if(array_key_exists("context", $metadata) && array_key_exists($name, $metadata["context"])){
-				foreach (glob($metadata["context"][$name]) as $file){
-					$local_context = json_decode(file_get_contents($file), true);
-					array_push($section["data"], array(
-						"file" => $file,
-						"context" => $local_context,
-						"render" => $this->engine->render($value, $local_context)
-					));
+				$many_files = glob($this->base_dir . "/" . $metadata["context"][$name]);
+				if(is_array($many_files) && count($many_files) > 0){
+					foreach ( $many_files as $file){
+						$local_context = json_decode(file_get_contents($file), true);
+						array_push($section["data"], array(
+							"file" => $file,
+							"context" => $local_context,
+							"render" => $this->engine->render($value, $local_context)
+						));
+					}
+				}else{
+					print("File '".$metadata["context"][$name]."' not found\n");
 				}
 			}else{
 				array_push($section["data"], array(
@@ -122,10 +128,11 @@ class Bularcama {
 		return $this->render_file($metadata, $sections, $vars, $path);
 	}
 
+	function pre_render_template_cb($matches){
+		return $this->engine->render($matches[0], $this->default_context);
+	}
 	function pre_render_template($template){
-		$template = preg_replace_callback("/{{\s?include.*?}}/", function($matches){
-			return $this->engine->render($matches[0], $this->default_context);
-		}, $template);
+		$template = preg_replace_callback("/{{\s?include.*?}}/", array($this, "pre_render_template_cb"), $template);
 		return $template;
 	}
 
@@ -199,10 +206,14 @@ class Bularcama {
 	}
 
 	function build_site(){
-		if(!$this->copy_dir($this->static_dir, $this->out_dir))
+		if(!$this->copy_dir($this->static_dir, $this->out_dir)){
+			print "Error copy_dir<br>";
+			//return false;
+		}
+		if(!$this->build_site_dir($this->site_dir, $this->out_dir)){
+			print "Error build_site_dir<br>";
 			return false;
-		if(!$this->build_site_dir($this->site_dir, $this->out_dir))
-			return false;
+		}
 		return true;
 	}
 

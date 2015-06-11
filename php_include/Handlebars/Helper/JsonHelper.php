@@ -16,11 +16,14 @@
  * @link      http://xamin.ir
  */
 
-namespace Handlebars\Helper;
+//namespace Handlebars\Helper;
 
-use Handlebars\Context;
-use Handlebars\Helper;
-use Handlebars\Template;
+//use Handlebars\Context;
+//use Handlebars\Helper;
+//use Handlebars\Template;
+require_once(dirname(__FILE__)."/../Context.php");
+require_once(dirname(__FILE__)."/../Helper.php");
+require_once(dirname(__FILE__)."/../Template.php");
 
 /**
  * Handlebars halper interface
@@ -36,7 +39,7 @@ use Handlebars\Template;
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
-class JsonHelper implements Helper
+class Handlebars_Helper_JsonHelper implements Handlebars_Helper
 {
     /**
      * Execute the helper
@@ -48,8 +51,8 @@ class JsonHelper implements Helper
      *
      * @return mixed
      */
-    public function execute(Template $template, Context $context, $args, $source)
+    public function execute(Handlebars_Template $template, Handlebars_Context $context, $args, $source)
     {
-        return new \Handlebars\SafeString(json_encode($context->get($args)));
+        return new Handlebars_SafeString(json_encode($context->get($args)));
     }
 }

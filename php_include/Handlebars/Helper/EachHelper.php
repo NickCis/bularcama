@@ -17,11 +17,14 @@
  * @link      http://xamin.ir
  */
 
-namespace Handlebars\Helper;
+//namespace Handlebars\Helper;
 
-use Handlebars\Context;
-use Handlebars\Helper;
-use Handlebars\Template;
+//use Handlebars\Context;
+//use Handlebars\Helper;
+//use Handlebars\Template;
+require_once(dirname(__FILE__)."/../Context.php");
+require_once(dirname(__FILE__)."/../Helper.php");
+require_once(dirname(__FILE__)."/../Template.php");
 
 /**
  * The Each Helper
@@ -38,7 +41,7 @@ use Handlebars\Template;
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
-class EachHelper implements Helper
+class Handlebars_Helper_EachHelper implements Handlebars_Helper
 {
     /**
      * Execute the helper
@@ -50,7 +53,7 @@ class EachHelper implements Helper
      *
      * @return mixed
      */
-    public function execute(Template $template, Context $context, $args, $source)
+    public function execute(Handlebars_Template $template, Handlebars_Context $context, $args, $source)
     {
         $tmp = $context->get($args);
         $buffer = '';
@@ -60,7 +63,7 @@ class EachHelper implements Helper
             $template->discard();
             $template->setStopToken(false);
             $buffer = $template->render($context);
-        } elseif (is_array($tmp) || $tmp instanceof \Traversable) {
+        } elseif (is_array($tmp) || $tmp instanceof Traversable) {
             $isList = is_array($tmp) && (array_keys($tmp) === range(0, count($tmp) - 1));
             $index = 0;
             $lastIndex = $isList ? (count($tmp) - 1) : false;

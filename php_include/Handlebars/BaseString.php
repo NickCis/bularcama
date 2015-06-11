@@ -15,7 +15,7 @@
  * @link      http://xamin.ir
  */
 
-namespace Handlebars;
+//namespace Handlebars;
 
 /**
  * Handlebars base string
@@ -29,7 +29,7 @@ namespace Handlebars;
  * @link      http://xamin.ir
  */
 
-class BaseString
+class Handlebars_BaseString
 {
     private $_string;
 

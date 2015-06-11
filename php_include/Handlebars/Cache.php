@@ -16,7 +16,7 @@
  * @link      http://xamin.ir
  */
 
-namespace Handlebars;
+//namespace Handlebars;
 
 /**
  * Cache interface
@@ -33,7 +33,7 @@ namespace Handlebars;
  * @link      http://xamin.ir
  */
 
-interface Cache
+interface Handlebars_Cache
 {
 
     /**

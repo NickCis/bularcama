@@ -13,7 +13,9 @@
  * @link      http://xamin.ir
  */
 
-namespace Handlebars;
+//namespace Handlebars;
+
+require_once(dirname(__FILE__)."/BaseString.php");
 
 /**
  * Handlebars safe string. Can be used in line helpers as wrapper for result to
@@ -28,6 +30,6 @@ namespace Handlebars;
  * @link      http://xamin.ir
  */
 
-class SafeString extends BaseString
+class Handlebars_SafeString extends Handlebars_BaseString
 {
 }

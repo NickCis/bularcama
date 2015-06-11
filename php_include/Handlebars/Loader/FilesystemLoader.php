@@ -20,10 +20,12 @@
  * @link      http://xamin.ir
  */
 
-namespace Handlebars\Loader;
+//namespace Handlebars\Loader;
 
-use Handlebars\Loader;
-use Handlebars\String;
+//use Handlebars\Loader;
+//use Handlebars\String;
+require_once(dirname(__FILE__)."/../Loader.php");
+require_once(dirname(__FILE__)."/../String.php");
 
 /**
  * Handlebars Template filesystem Loader implementation.
@@ -38,7 +40,7 @@ use Handlebars\String;
  * @link      http://xamin.ir *
  */
 
-class FilesystemLoader implements Loader
+class Handlebars_Loader_FilesystemLoader implements Handlebars_Loader
 {
     private $_baseDir;
     private $_extension = '.handlebars';
@@ -75,7 +77,7 @@ class FilesystemLoader implements Loader
 
         foreach ($this->_baseDir as $dir) {
             if (!is_dir($dir)) {
-                throw new \RuntimeException(
+                throw new RuntimeException(
                     'FilesystemLoader baseDir must be a directory: ' . $dir
                 );
             }
@@ -107,7 +109,7 @@ class FilesystemLoader implements Loader
             $this->_templates[$name] = $this->loadFile($name);
         }
 
-        return new String($this->_templates[$name]);
+        return new Handlebars_String($this->_templates[$name]);
     }
 
     /**
@@ -123,7 +125,7 @@ class FilesystemLoader implements Loader
         $fileName = $this->getFileName($name);
 
         if ($fileName === false) {
-            throw new \InvalidArgumentException('Template ' . $name . ' not found.');
+            throw new InvalidArgumentException('Template ' . $name . ' not found.');
         }
 
         return file_get_contents($fileName);

@@ -18,9 +18,16 @@
  * @link      http://xamin.ir
  */
 
-namespace Handlebars;
-use Handlebars\Loader\StringLoader;
-use Handlebars\Cache\Dummy;
+//namespace Handlebars;
+//use Handlebars\Loader\StringLoader;
+//use Handlebars\Cache\Dummy;
+require_once(dirname(__FILE__)."/Loader/StringLoader.php");
+require_once(dirname(__FILE__)."/Cache/Dummy.php");
+require_once(dirname(__FILE__)."/Helpers.php");
+require_once(dirname(__FILE__)."/Loader/StringLoader.php");
+require_once(dirname(__FILE__)."/Tokenizer.php");
+require_once(dirname(__FILE__)."/Parser.php");
+require_once(dirname(__FILE__)."/Template.php");
 
 /**
  * Handlebars template engine, based on mustache.
@@ -34,7 +41,7 @@ use Handlebars\Cache\Dummy;
  * @link      http://xamin.ir
  */
 
-class Handlebars
+class Handlebars_Handlebars
 {
     private static $_instance = false;
     const VERSION = '1.0.0';
@@ -49,7 +56,7 @@ class Handlebars
     public static function factory($options = array())
     {
         if (self::$_instance === false) {
-            self::$_instance = new Handlebars($options);
+            self::$_instance = new Handlebars_Handlebars($options);
         }
 
         return self::$_instance;
@@ -88,7 +95,7 @@ class Handlebars
     /**
      * @var string the class to use for the template
      */
-    private $_templateClass = 'Handlebars\\Template';
+    private $_templateClass = 'Handlebars_Template';
 
     /**
      * @var callable escape function to use
@@ -144,7 +151,7 @@ class Handlebars
 
         if (isset($options['escape'])) {
             if (!is_callable($options['escape'])) {
-                throw new \InvalidArgumentException(
+                throw new InvalidArgumentException(
                     'Handlebars Constructor "escape" option must be callable'
                 );
             }
@@ -204,7 +211,7 @@ class Handlebars
     public function getHelpers()
     {
         if (!isset($this->_helpers)) {
-            $this->_helpers = new Helpers();
+            $this->_helpers = new Handlebars_Helpers();
         }
 
         return $this->_helpers;
@@ -279,7 +286,7 @@ class Handlebars
     public function getLoader()
     {
         if (!isset($this->_loader)) {
-            $this->_loader = new StringLoader();
+            $this->_loader = new Handlebars_Loader_StringLoader();
         }
 
         return $this->_loader;
@@ -305,7 +312,7 @@ class Handlebars
     public function getPartialsLoader()
     {
         if (!isset($this->_partialsLoader)) {
-            $this->_partialsLoader = new StringLoader();
+            $this->_partialsLoader = new Handlebars_Loader_StringLoader();
         }
 
         return $this->_partialsLoader;
@@ -331,7 +338,7 @@ class Handlebars
     public function getCache()
     {
         if (!isset($this->_cache)) {
-            $this->_cache = new Dummy();
+            $this->_cache = new Handlebars_Cache_Dummy();
         }
 
         return $this->_cache;
@@ -358,7 +365,7 @@ class Handlebars
     public function setEscape($escape)
     {
         if (!is_callable($escape)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'Escape function must be a callable'
             );
         }
@@ -414,7 +421,7 @@ class Handlebars
     public function getTokenizer()
     {
         if (!isset($this->_tokenizer)) {
-            $this->_tokenizer = new Tokenizer();
+            $this->_tokenizer = new Handlebars_Tokenizer();
         }
 
         return $this->_tokenizer;
@@ -443,7 +450,7 @@ class Handlebars
     public function getParser()
     {
         if (!isset($this->_parser)) {
-            $this->_parser = new Parser();
+            $this->_parser = new Handlebars_Parser();
         }
 
         return $this->_parser;
@@ -458,8 +465,8 @@ class Handlebars
      */
     public function setTemplateClass($class)
     {
-        if (!is_a($class, 'Handlebars\\Template', true)) {
-            throw new \InvalidArgumentException(
+        if (!is_a($class, 'Handlebars_Template', true)) {
+            throw new InvalidArgumentException(
                 'Custom template class must extend Template'
             );
         }

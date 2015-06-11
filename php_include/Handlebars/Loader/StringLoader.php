@@ -17,9 +17,11 @@
  * @link      http://xamin.ir
  */
 
-namespace Handlebars\Loader;
-use Handlebars\Loader;
-use Handlebars\String;
+//namespace Handlebars\Loader;
+//use Handlebars\Loader;
+//use Handlebars\String;
+require_once(dirname(__FILE__)."/../Loader.php");
+require_once(dirname(__FILE__)."/../String.php");
 
 /**
  * Handlebars Template string Loader implementation.
@@ -34,7 +36,7 @@ use Handlebars\String;
  * @link      http://xamin.ir *
  */
 
-class StringLoader implements Loader
+class Handlebars_Loader_StringLoader implements Handlebars_Loader
 {
 
     /**
@@ -46,7 +48,7 @@ class StringLoader implements Loader
      */
     public function load($name)
     {
-        return new String($name);
+        return new Handlebars_String($name);
     }
 
 }

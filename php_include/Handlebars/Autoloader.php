@@ -19,7 +19,7 @@
  * @link      http://xamin.ir
  */
 
-namespace Handlebars;
+//namespace Handlebars;
 
 /**
  * Autloader for handlebars.php
@@ -34,7 +34,7 @@ namespace Handlebars;
  * @link      http://xamin.ir
  */
 
-class Autoloader
+class Handlebars_Autoloader
 {
 
     private $_baseDir;
@@ -43,12 +43,12 @@ class Autoloader
      * Autoloader constructor.
      *
      * @param string $baseDir Handlebars library base directory default is
-     *                        __DIR__.'/..'
+     *                        dirname(__FILE__).'/..'
      */
     protected function __construct($baseDir = null)
     {
         if ($baseDir === null) {
-            $this->_baseDir = realpath(__DIR__ . '/..');
+            $this->_baseDir = realpath(dirname(__FILE__) . '/..');
         } else {
             $this->_baseDir = rtrim($baseDir, '/');
         }
@@ -58,7 +58,7 @@ class Autoloader
      * Register a new instance as an SPL autoloader.
      *
      * @param string $baseDir Handlebars library base directory, default is
-     *                        __DIR__.'/..'
+     *                        dirname(__FILE__).'/..'
      *
      * @return \Handlebars\Autoloader Registered Autoloader instance
      */

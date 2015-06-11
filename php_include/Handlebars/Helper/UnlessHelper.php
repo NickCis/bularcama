@@ -16,11 +16,14 @@
  * @link      http://xamin.ir
  */
 
-namespace Handlebars\Helper;
+//namespace Handlebars\Helper;
 
-use Handlebars\Context;
-use Handlebars\Helper;
-use Handlebars\Template;
+//use Handlebars\Context;
+//use Handlebars\Helper;
+//use Handlebars\Template;
+require_once(dirname(__FILE__)."/../Context.php");
+require_once(dirname(__FILE__)."/../Helper.php");
+require_once(dirname(__FILE__)."/../Template.php");
 
 /**
  * The Unless Helper
@@ -36,7 +39,7 @@ use Handlebars\Template;
  * @version   Release: @package_version@
  * @link      http://xamin.ir
  */
-class UnlessHelper implements Helper
+class Handlebars_Helper_UnlessHelper implements Handlebars_Helper
 {
     /**
      * Execute the helper
@@ -48,7 +51,7 @@ class UnlessHelper implements Helper
      *
      * @return mixed
      */
-    public function execute(Template $template, Context $context, $args, $source)
+    public function execute(Handlebars_Template $template, Handlebars_Context $context, $args, $source)
     {
         $tmp = $context->get($args);
 

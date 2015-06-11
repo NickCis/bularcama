@@ -21,7 +21,7 @@
  * @link      http://xamin.ir
  */
 
-namespace Handlebars;
+//namespace Handlebars;
 
 /**
  * Handlebars tokenizer (based on mustache)
@@ -36,7 +36,7 @@ namespace Handlebars;
  * @link      http://xamin.ir
  */
 
-class Tokenizer
+class Handlebars_Tokenizer
 {
 
     // Finite state machine states
@@ -122,7 +122,7 @@ class Tokenizer
      */
     public function scan($text/*, $delimiters = null*/)
     {
-        if ($text instanceof String) {
+        if ($text instanceof Handlebars_String) {
             $text = $text->getString();
         }
         $this->reset();

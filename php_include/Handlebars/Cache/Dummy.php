@@ -16,8 +16,9 @@
  * @link      http://xamin.ir
  */
 
-namespace Handlebars\Cache;
-use Handlebars\Cache;
+//namespace Handlebars\Cache;
+//use Handlebars\Cache;
+require_once(dirname(__FILE__)."/../Cache.php");
 
 /**
  * A dummy array cache
@@ -31,7 +32,7 @@ use Handlebars\Cache;
  * @link      http://xamin.ir
  */
 
-class Dummy implements Cache
+class Handlebars_Cache_Dummy implements Handlebars_Cache
 {
     private $_cache = array();
 

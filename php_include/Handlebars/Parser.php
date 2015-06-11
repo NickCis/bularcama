@@ -18,7 +18,8 @@
  * @link      http://xamin.ir
  */
 
-namespace Handlebars;
+//namespace Handlebars;
+require_once(dirname(__FILE__)."/Tokenizer.php");
 
 /**
  * Handlebars parser (based on mustache)
@@ -36,7 +37,7 @@ namespace Handlebars;
  * @link      http://xamin.ir
  */
 
-class Parser
+class Handlebars_Parser
 {
     /**
      * Process array of tokens and convert them into parse tree
@@ -47,7 +48,7 @@ class Parser
      */
     public function parse(array $tokens = array())
     {
-        return $this->_buildTree(new \ArrayIterator($tokens));
+        return $this->_buildTree(new ArrayIterator($tokens));
     }
 
     /**
@@ -63,7 +64,7 @@ class Parser
      * @return array Token parse tree
      *
      */
-    private function _buildTree(\ArrayIterator $tokens)
+    private function _buildTree(ArrayIterator $tokens)
     {
         $stack = array();
 
@@ -72,34 +73,34 @@ class Parser
             $tokens->next();
 
             if ($token !== null) {
-                switch ($token[Tokenizer::TYPE]) {
-                case Tokenizer::T_END_SECTION:
+                switch ($token[Handlebars_Tokenizer::TYPE]) {
+                case Handlebars_Tokenizer::T_END_SECTION:
                     $newNodes = array($token);
                     do {
                         $result = array_pop($stack);
                         if ($result === null) {
-                            throw new \LogicException(
-                                'Unexpected closing tag: /' . $token[Tokenizer::NAME]
+                            throw new LogicException(
+                                'Unexpected closing tag: /' . $token[Handlebars_Tokenizer::NAME]
                             );
                         }
 
-                        if (!array_key_exists(Tokenizer::NODES, $result)
-                            && isset($result[Tokenizer::NAME])
-                            && $result[Tokenizer::NAME] == $token[Tokenizer::NAME]
+                        if (!array_key_exists(Handlebars_Tokenizer::NODES, $result)
+                            && isset($result[Handlebars_Tokenizer::NAME])
+                            && $result[Handlebars_Tokenizer::NAME] == $token[Handlebars_Tokenizer::NAME]
                         ) {
-                            if (isset($result[Tokenizer::TRIM_RIGHT]) && $result[Tokenizer::TRIM_RIGHT]) {
+                            if (isset($result[Handlebars_Tokenizer::TRIM_RIGHT]) && $result[Handlebars_Tokenizer::TRIM_RIGHT]) {
                                 // If the start node has trim right, then its equal with the first item in the loop with
                                 // Trim left
-                                $newNodes[0][Tokenizer::TRIM_LEFT] = true;
+                                $newNodes[0][Handlebars_Tokenizer::TRIM_LEFT] = true;
                             }
 
-                            if (isset($token[Tokenizer::TRIM_RIGHT]) && $token[Tokenizer::TRIM_RIGHT]) {
+                            if (isset($token[Handlebars_Tokenizer::TRIM_RIGHT]) && $token[Handlebars_Tokenizer::TRIM_RIGHT]) {
                                 //OK, if we have trim right here, we should pass it to the upper level.
-                                $result[Tokenizer::TRIM_RIGHT] = true;
+                                $result[Handlebars_Tokenizer::TRIM_RIGHT] = true;
                             }
 
-                            $result[Tokenizer::NODES] = $newNodes;
-                            $result[Tokenizer::END] = $token[Tokenizer::INDEX];
+                            $result[Handlebars_Tokenizer::NODES] = $newNodes;
+                            $result[Handlebars_Tokenizer::END] = $token[Handlebars_Tokenizer::INDEX];
                             array_push($stack, $result);
                             break;
                         } else {

@@ -14,9 +14,10 @@
  * @link      http://xamin.ir
  */
 
-namespace Handlebars\Loader;
+//namespace Handlebars\Loader;
 
-use Handlebars\Loader;
+//use Handlebars\Loader;
+require_once(dirname(__FILE__)."/../Loader.php");
 
 /**
  * Handlebars Template array Loader implementation.
@@ -29,7 +30,7 @@ use Handlebars\Loader;
  * @version   Release: @package_version@
  * @link      http://xamin.ir *
  */
-class ArrayLoader implements Loader
+class Handlebars_Loader_ArrayLoader implements Handlebars_Loader
 {
     private $_templates;
 
@@ -69,7 +70,7 @@ class ArrayLoader implements Loader
         if (isset($this->_templates[$name])) {
             return $this->_templates[$name];
         }
-        throw new \RuntimeException(
+        throw new RuntimeException(
             "Can not find the $name template"
         );
     }

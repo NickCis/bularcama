@@ -21,7 +21,8 @@
  * @link      http://xamin.ir
  */
 
-namespace Handlebars;
+//namespace Handlebars;
+require_once(dirname(__FILE__)."/String.php");
 
 /**
  * Handlebars context
@@ -38,7 +39,7 @@ namespace Handlebars;
  * @link      http://xamin.ir
  */
 
-class Context
+class Handlebars_Context
 {
 
     /**
@@ -185,7 +186,7 @@ class Context
      */
     public function get($variableName, $strict = false)
     {
-        if ($variableName instanceof \Handlebars\String) {
+        if ($variableName instanceof Handlebars_String) {
             return (string)$variableName;
         }
         $variableName = trim($variableName);
@@ -196,7 +197,7 @@ class Context
         }
         if (count($this->stack) < $level) {
             if ($strict) {
-                throw new \InvalidArgumentException(
+                throw new InvalidArgumentException(
                     'can not find variable in context'
                 );
             }
@@ -211,7 +212,7 @@ class Context
         $current = current($this->stack);
         if (!$variableName) {
             if ($strict) {
-                throw new \InvalidArgumentException(
+                throw new InvalidArgumentException(
                     'can not find variable in context'
                 );
             }
@@ -223,7 +224,7 @@ class Context
             if (isset($specialVariables[$variableName])) {
                 return $specialVariables[$variableName];
             } elseif ($strict) {
-                throw new \InvalidArgumentException(
+                throw new InvalidArgumentException(
                     'can not find variable in context'
                 );
             } else {
@@ -271,7 +272,7 @@ class Context
         }
 
         if ($strict) {
-            throw new \InvalidArgumentException('can not find variable in context');
+            throw new InvalidArgumentException('can not find variable in context');
         }
 
         return $value;
@@ -295,7 +296,7 @@ class Context
         $get_pattern = "/(?:" . $name_pattern . ")/";
 
         if (!preg_match($check_pattern, $variableName)) {
-            throw new \InvalidArgumentException('variable name is invalid');
+            throw new InvalidArgumentException('variable name is invalid');
         }
 
         preg_match_all($get_pattern, $variableName, $matches);
